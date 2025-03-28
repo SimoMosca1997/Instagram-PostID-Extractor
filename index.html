@@ -58,11 +58,11 @@
 <body>
     <div class="container">
         <h1>Instagram Post ID Extractor</h1>
-        <p>Incolla uno o più link di Instagram (uno per riga) nel campo qui sotto:</p>
-        <textarea id="inputLinks" placeholder="https://www.instagram.com/kurolily/p/Cc_EJ8jsIrE/"></textarea>
-        <button onclick="extractPostIds()">Estrai Post ID</button>
+        <p>Paste one or more Instagram links (one per line):</p>
+        <textarea id="inputLinks" placeholder="https://www.instagram.com/"></textarea>
+        <button onclick="extractPostIds()">Find Post ID</button>
         <div class="output" id="output">
-            <h2>Risultati:</h2>
+            <h2>Results:</h2>
             <ul id="resultList"></ul>
         </div>
     </div>
@@ -77,25 +77,27 @@
             for (const link of links) {
                 if (link) {
                     try {
-                        // Effettua una richiesta HTTP per ottenere il contenuto HTML
-                        const response = await fetch(link, { mode: 'cors' });
-                        const html = await response.text();
+                        // Invia la richiesta al server Node.js
+                        const response = await fetch('http://localhost:3000/extract', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ url: link }),
+                        });
 
-                        // Cerca la stringa "content=\"instagram://media?id="
-                        const match = html.match(/content="instagram:\/\/media\?id=(\d+)"/);
-                        if (match && match[1]) {
-                            const postId = match[1];
-                            const listItem = document.createElement('li');
-                            listItem.textContent = `Post ID: ${postId}`;
-                            resultList.appendChild(listItem);
+                        const data = await response.json();
+
+                        const listItem = document.createElement('li');
+                        if (response.ok) {
+                            listItem.textContent = `Post ID: ${data.postId}`;
                         } else {
-                            const listItem = document.createElement('li');
-                            listItem.textContent = `Nessun Post ID trovato per il link: ${link}`;
-                            resultList.appendChild(listItem);
+                            listItem.textContent = `Errore per il link ${link}: ${data.error}`;
                         }
+                        resultList.appendChild(listItem);
                     } catch (error) {
                         const listItem = document.createElement('li');
-                        listItem.textContent = `Errore durante l'analisi del link: ${link}`;
+                        listItem.textContent = `Error: ${link}`;
                         resultList.appendChild(listItem);
                     }
                 }
