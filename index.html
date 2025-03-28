@@ -94,7 +94,7 @@
                         if (response.ok) {
                             listItem.textContent = `${data.postId}`;
                         } else {
-                            listItem.textContent = `Errore per il link ${link}: ${data.error}`;
+                            listItem.textContent = `Check the link, it's wrong! ${link}: ${data.error}`;
                         }
                         resultList.appendChild(listItem);
                     } catch (error) {
