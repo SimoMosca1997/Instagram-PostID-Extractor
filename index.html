@@ -92,7 +92,7 @@
 
                         const listItem = document.createElement('li');
                         if (response.ok) {
-                            listItem.textContent = `Post ID: ${data.postId}`;
+                            listItem.textContent = `${data.postId}`;
                         } else {
                             listItem.textContent = `Errore per il link ${link}: ${data.error}`;
                         }
