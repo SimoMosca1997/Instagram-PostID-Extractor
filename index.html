@@ -78,7 +78,7 @@
                 if (link) {
                     try {
                         // Invia la richiesta al server Node.js
-                        const response = await fetch('http://localhost:3000/extract', {
+                        const response = await fetch('https://instagram-postid-extractor-production.up.railway.app/', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
