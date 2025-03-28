@@ -59,7 +59,7 @@
     <div class="container">
         <h1>Instagram Post ID Extractor</h1>
         <p>Incolla uno o più link di Instagram (uno per riga) nel campo qui sotto:</p>
-        <textarea id="inputLinks" placeholder="https://www.instagram.com/p/XYZ123/"></textarea>
+        <textarea id="inputLinks" placeholder="https://www.instagram.com/kurolily/p/Cc_EJ8jsIrE/"></textarea>
         <button onclick="extractPostIds()">Estrai Post ID</button>
         <div class="output" id="output">
             <h2>Risultati:</h2>
@@ -68,27 +68,38 @@
     </div>
 
     <script>
-        function extractPostIds() {
+        async function extractPostIds() {
             const input = document.getElementById('inputLinks').value;
-            const links = input.split('\n');
+            const links = input.split('\n').map(link => link.trim());
             const resultList = document.getElementById('resultList');
             resultList.innerHTML = '';
 
-            links.forEach(link => {
-                const trimmedLink = link.trim();
-                const match = trimmedLink.match(/media\?id=(\d+)/);
+            for (const link of links) {
+                if (link) {
+                    try {
+                        // Effettua una richiesta HTTP per ottenere il contenuto HTML
+                        const response = await fetch(link, { mode: 'cors' });
+                        const html = await response.text();
 
-                if (match && match[1]) {
-                    const postId = match[1];
-                    const listItem = document.createElement('li');
-                    listItem.textContent = `Post ID: ${postId}`;
-                    resultList.appendChild(listItem);
-                } else {
-                    const listItem = document.createElement('li');
-                    listItem.textContent = `Nessun Post ID trovato per il link: ${trimmedLink}`;
-                    resultList.appendChild(listItem);
+                        // Cerca la stringa "content=\"instagram://media?id="
+                        const match = html.match(/content="instagram:\/\/media\?id=(\d+)"/);
+                        if (match && match[1]) {
+                            const postId = match[1];
+                            const listItem = document.createElement('li');
+                            listItem.textContent = `Post ID: ${postId}`;
+                            resultList.appendChild(listItem);
+                        } else {
+                            const listItem = document.createElement('li');
+                            listItem.textContent = `Nessun Post ID trovato per il link: ${link}`;
+                            resultList.appendChild(listItem);
+                        }
+                    } catch (error) {
+                        const listItem = document.createElement('li');
+                        listItem.textContent = `Errore durante l'analisi del link: ${link}`;
+                        resultList.appendChild(listItem);
+                    }
                 }
-            });
+            }
         }
     </script>
 </body>
