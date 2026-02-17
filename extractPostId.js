@@ -18,7 +18,7 @@ async function extractPostId(instagramUrl) {
         const content = await page.content();
 
         // Cerca il Post ID nel contenuto della pagina
-        const match = content.match(/content="instagram:\/\/media\?id=(\d+)"/);
+        const match = content.match(/media_id['"]?\s*:\s*['"](\d+)['"]/);
         if (match && match[1]) {
             console.log(`Post ID trovato: ${match[1]}`);
         } else {
